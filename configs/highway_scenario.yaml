@@ -1,0 +1,56 @@
+# Highway V2V Scenario — 10 DSRC vehicles in a line, 200 m spread
+scenario: highway
+num_dsrc_vehicles: 10
+num_cv2x_vehicles: 0
+
+dsrc:
+  channel: 178
+  tx_power_dbm: 23.0
+  mcs_index: 3
+  sync_interval_ms: 100
+  cch_interval_ms: 50
+  guard_interval_ms: 4.0
+  antenna_gain_dbi: 0.0
+  noise_figure_db: 7.0
+
+cv2x:
+  num_subchannels: 4
+  subchannel_prbs: 10
+  sensing_window_ms: 100
+  mcs_index: 10
+  tx_power_dbm: 23.0
+  antenna_gain_dbi: 0.0
+  noise_figure_db: 7.0
+
+security:
+  signature_algorithm: ecdsa-p256
+  replay_window_ms: 1000
+  dedup_window_seconds: 2.0
+  pseudonym_pool_size: 20
+  pseudonym_rotation_interval_s: 300.0
+  enable_revocation_check: false
+  enable_misbehavior_detection: false
+
+channel:
+  model: winner_plus
+  environment: highway
+  enable_fading: true
+  enable_interference: true
+  carrier_frequency_hz: 5.9e9
+  temperature_kelvin: 293.15
+
+simulation:
+  duration_seconds: 60.0
+  seed: 100
+  bsm_rate_hz: 10.0
+  real_time: false
+
+gateway:
+  enable_dsrc_to_cv2x: false   # DSRC-only scenario; gateway inactive
+  enable_cv2x_to_dsrc: false
+  max_gateway_latency_ms: 5.0
+  log_every_message: false
+
+results_dir: results/highway
+log_level: INFO
+

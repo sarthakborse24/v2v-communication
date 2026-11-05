@@ -1,0 +1,38 @@
+# V2X Gateway Simulator — Python Dependencies
+# Pinned for reproducibility on Windows / Python 3.11+
+# Install: pip install -r requirements.txt
+
+# --- Cryptography ---
+cryptography>=42.0.0,<43.0.0        # PyCA: ECDSA-P256, AES-128-CCM, ECDH
+
+# --- ASN.1 Encoding (J2735 BSM UPER) ---
+asn1tools>=0.166.0,<0.167.0         # UPER/PER encode-decode; MIT license
+
+# --- Discrete-Event Simulation ---
+simpy>=4.1.1,<5.0.0                 # Process-based DES framework; MIT license
+
+# --- Numerical / Signal Processing ---
+numpy>=1.26.0,<3.0.0                # Channel math, vectorized PDR calculations
+scipy>=1.12.0,<2.0.0                # Rayleigh/Rician fading, statistical distributions
+
+# --- Frame Construction ---
+scapy>=2.5.0,<3.0.0                 # 802.11 frame structure (custom 802.11p layers added)
+
+# --- Visualisation ---
+matplotlib>=3.8.0,<4.0.0            # PDR curves, latency CDF, throughput plots
+
+# --- Configuration ---
+pydantic>=2.0.0,<3.0.0              # Scenario config validation with schema
+pyyaml>=6.0.0,<7.0.0               # YAML config file parsing
+
+# --- Logging ---
+loguru>=0.7.0,<1.0.0                # Structured per-message logging
+
+# --- Testing ---
+pytest>=8.0.0,<9.0.0
+pytest-cov>=4.0.0,<6.0.0           # Coverage reporting
+pytest-mock>=3.12.0,<4.0.0         # Mock support
+
+# --- Development Utilities ---
+black>=24.0.0                       # Code formatting (optional)
+

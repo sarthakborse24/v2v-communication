@@ -1,0 +1,56 @@
+# Urban Intersection Scenario — 4 DSRC + 4 C-V2X vehicles, mixed gateway
+scenario: intersection
+num_dsrc_vehicles: 4
+num_cv2x_vehicles: 4
+
+dsrc:
+  channel: 178
+  tx_power_dbm: 20.0
+  mcs_index: 2             # QPSK-1/2 — 6 Mbps
+  sync_interval_ms: 100
+  cch_interval_ms: 50
+  guard_interval_ms: 4.0
+  antenna_gain_dbi: 2.0    # Modest gain from RSU-style antenna
+  noise_figure_db: 8.0
+
+cv2x:
+  num_subchannels: 4
+  subchannel_prbs: 10
+  sensing_window_ms: 100
+  mcs_index: 8
+  tx_power_dbm: 20.0
+  antenna_gain_dbi: 2.0
+  noise_figure_db: 8.0
+
+security:
+  signature_algorithm: ecdsa-p256
+  replay_window_ms: 1000
+  dedup_window_seconds: 2.0
+  pseudonym_pool_size: 20
+  pseudonym_rotation_interval_s: 300.0
+  enable_revocation_check: false
+  enable_misbehavior_detection: false
+
+channel:
+  model: winner_plus
+  environment: urban_intersection
+  enable_fading: true
+  enable_interference: true
+  carrier_frequency_hz: 5.9e9
+  temperature_kelvin: 300.0  # Slightly warmer urban environment
+
+simulation:
+  duration_seconds: 30.0
+  seed: 200
+  bsm_rate_hz: 10.0
+  real_time: false
+
+gateway:
+  enable_dsrc_to_cv2x: true
+  enable_cv2x_to_dsrc: true
+  max_gateway_latency_ms: 5.0
+  log_every_message: true
+
+results_dir: results/intersection
+log_level: DEBUG
+

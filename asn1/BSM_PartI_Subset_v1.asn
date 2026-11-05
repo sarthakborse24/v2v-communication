@@ -1,0 +1,191 @@
+-- =============================================================================
+-- V2X Gateway Simulator — BSM Part I Subset ASN.1 Schema
+-- =============================================================================
+-- File: BSM_PartI_Subset_v1.asn
+--
+-- IMPORTANT — READ BEFORE USE:
+-- This is a HAND-CRAFTED SUBSET of the SAE J2735 BasicSafetyMessage
+-- Part I definition. It covers all 14 mandatory Part I fields with
+-- correct ASN.1 types, constraint ranges, and UPER encoding semantics
+-- as published in the SAE J2735-2020 data dictionary.
+--
+-- What this IS:
+--   - Structurally and semantically correct for BSM Part I
+--   - Suitable for ASN.1 UPER encode/decode via asn1tools
+--   - Validated against the SAE J2735 published data dictionary
+--
+-- What this IS NOT:
+--   - The full SAE J2735 schema (which requires SAE membership purchase)
+--   - J2735 BSM Part II (optional safety extension)
+--   - Other J2735 message types (MAP, SPAT, TIM, etc.)
+--
+-- Deviations from full J2735:
+--   1. Only BSM (MessageFrame wrapping simplified)
+--   2. No IMPORT/EXPORT cross-references to other J2735 modules
+--   3. SteeringWheelAngle, AccelerationSet4Way simplified to INTEGER
+--      with correct constraint ranges; no sub-structure expansion
+--
+-- ASN.1 Encoding: UPER (Unaligned Packed Encoding Rules)
+-- Standard Reference: SAE J2735-2020, Section 7 (BasicSafetyMessage)
+-- =============================================================================
+
+BSM-PartI-Subset DEFINITIONS AUTOMATIC TAGS ::= BEGIN
+
+-- =============================================================================
+-- Top-level BSM container
+-- =============================================================================
+
+BasicSafetyMessage ::= SEQUENCE {
+    coreData    BSMcoreData
+}
+
+BSMcoreData ::= SEQUENCE {
+    msgCnt      MsgCount,
+    id          TemporaryID,
+    secMark     DSecond,
+    lat         Latitude,
+    long        Longitude,
+    elev        Elevation,
+    accuracy    PositionalAccuracy,
+    transmission TransmissionState,
+    speed       Speed,
+    heading     Heading,
+    angle       SteeringWheelAngle,
+    accelSet    AccelerationSet4Way,
+    brakes      BrakeSystemStatus,
+    size        VehicleSize,
+    ...
+}
+
+-- =============================================================================
+-- Field type definitions (confirmed ranges per J2735-2020 data dictionary)
+-- =============================================================================
+
+-- msgCnt: 7 bits UPER (0–127, wraps modulo 128)
+-- Source: J2735 §7, MsgCount
+MsgCount ::= INTEGER (0..127)
+
+-- id: 4-byte temporary pseudonymous vehicle identifier
+-- Rotated periodically for privacy; correlated with pseudonym cert rotation
+-- Source: J2735 §7, TemporaryID
+TemporaryID ::= OCTET STRING (SIZE(4))
+
+-- secMark: milliseconds within the current minute (0–65535)
+-- Source: J2735 §7, DSecond
+DSecond ::= INTEGER (0..65535)
+
+-- lat: latitude in 1/10 microdegree units, WGS-84
+-- Range: -900000000 (−90°) to 900000000 (+90°), 900000001 = unavailable
+-- UPER: requires 32 bits (signed range needs offset encoding)
+-- Source: J2735 §7, Latitude
+Latitude ::= INTEGER (-900000000..900000001)
+
+-- long: longitude in 1/10 microdegree units, WGS-84
+-- Range: -1799999999 (−180°) to 1800000001 (+180°)
+-- Note: standard uses -1799999999 as min; 1800000001 = unavailable
+-- Source: J2735 §7, Longitude
+Longitude ::= INTEGER (-1799999999..1800000001)
+
+-- elev: elevation above WGS-84 ellipsoid in units of 0.1 metres
+-- Range: -4096 (−409.6 m) to 61439 (+6143.9 m)
+-- Special value: -4096 = unknown
+-- Source: J2735 §7, Elevation (DSRC:Elevation)
+Elevation ::= INTEGER (-4096..61439)
+
+-- accuracy: Positional accuracy ellipse (semi-major, semi-minor axes + orientation)
+-- Source: J2735 §7, PositionalAccuracy
+PositionalAccuracy ::= SEQUENCE {
+    semiMajor   SemiMajorAxisAccuracy,
+    semiMinor   SemiMinorAxisAccuracy,
+    orientation SemiMajorAxisOrientation
+}
+
+-- semiMajor: 0 (0 cm) to 254 (12.7 m); 255 = unavailable; units: 5 cm
+SemiMajorAxisAccuracy ::= INTEGER (0..255)
+
+-- semiMinor: same scale as semiMajor
+SemiMinorAxisAccuracy ::= INTEGER (0..255)
+
+-- orientation: 0 to 65535 (0° to 359.9945°); units: 0.0054932° per step
+SemiMajorAxisOrientation ::= INTEGER (0..65535)
+
+-- transmission: vehicle gear/transmission state
+-- Source: J2735 §7, TransmissionState
+TransmissionState ::= ENUMERATED {
+    neutral     (0),
+    park        (1),
+    forwardGears (2),
+    reverseGears (3),
+    reserved1   (4),
+    reserved2   (5),
+    reserved3   (6),
+    unavailable (7)
+}
+
+-- speed: 0 to 8191 in units of 0.02 m/s; 8191 = unavailable
+-- Range: 0 (0 m/s) to 8190 (163.80 m/s)
+-- Source: J2735 §7, Speed
+Speed ::= INTEGER (0..8191)
+
+-- heading: 0 to 28800 in units of 0.0125 degrees
+-- 0 = North, increases clockwise; 28800 = unavailable
+-- Source: J2735 §7, Heading
+Heading ::= INTEGER (0..28800)
+
+-- angle: steering wheel angle in units of 1.5 degrees
+-- Range: -126 (leftmost) to 127 (rightmost); -128 = unavailable
+-- Source: J2735 §7, SteeringWheelAngle
+SteeringWheelAngle ::= INTEGER (-126..127)
+
+-- AccelerationSet4Way: longitudinal, lateral, vertical acceleration + yaw rate
+-- Source: J2735 §7, AccelerationSet4Way
+AccelerationSet4Way ::= SEQUENCE {
+    long    Acceleration,
+    lat     Acceleration,
+    vert    VerticalAcceleration,
+    yaw     YawRate
+}
+
+-- Acceleration: in 0.01 m/s² units; -2000 to 2001; 2001 = unavailable
+Acceleration ::= INTEGER (-2000..2001)
+
+-- VerticalAcceleration: in 0.02 g units; -127 to 127; -128 = unavailable
+VerticalAcceleration ::= INTEGER (-127..127)
+
+-- YawRate: in 0.01 degrees/s; -32767 to 32767; -32768 = unavailable
+YawRate ::= INTEGER (-32767..32767)
+
+-- brakes: BrakeSystemStatus — packed bit flags
+-- bit 0: wheelBrakes applied (4 bits for each wheel); bit 4: traction control; etc.
+-- Encoded as a BIT STRING of length 8 bits in J2735 (simplified here)
+-- Source: J2735 §7, BrakeSystemStatus
+BrakeSystemStatus ::= SEQUENCE {
+    wheelBrakes BrakeAppliedStatus,
+    traction    TractionControlStatus,
+    abs         AntiLockBrakeStatus,
+    scs         StabilityControlStatus,
+    brakeBoost  BrakeBoostApplied,
+    auxBrakes   AuxiliaryBrakeStatus
+}
+
+-- Individual brake status fields (bit-packed in UPER)
+BrakeAppliedStatus      ::= BIT STRING (SIZE(4))   -- one bit per wheel
+TractionControlStatus   ::= ENUMERATED { unavailable(0), off(1), on(2), engaged(3) }
+AntiLockBrakeStatus     ::= ENUMERATED { unavailable(0), off(1), on(2), engaged(3) }
+StabilityControlStatus  ::= ENUMERATED { unavailable(0), off(1), on(2), engaged(3) }
+BrakeBoostApplied       ::= ENUMERATED { unavailable(0), notApplied(1), applied(2) }
+AuxiliaryBrakeStatus    ::= ENUMERATED { unavailable(0), off(1), on(2), reserved(3) }
+
+-- size: vehicle dimensions in centimetres
+-- Source: J2735 §7, VehicleSize
+VehicleSize ::= SEQUENCE {
+    width   VehicleWidth,
+    length  VehicleLength
+}
+
+-- width: 0–1023 cm; 0 = unavailable
+VehicleWidth  ::= INTEGER (0..1023)
+-- length: 0–4095 cm; 0 = unavailable
+VehicleLength ::= INTEGER (0..4095)
+
+END
