@@ -103,43 +103,98 @@ python main.py --scenario mixed_stack --duration 4.0 --vehicles 10
 python main.py --generate-pki
 ```
 
-### 4.2 Sample Output (Highway Scenario)
-```
-========================================================================
- SIMULATION RUN SUMMARY: HIGHWAY (3.0s)
-========================================================================
-  Total BSM Broadcasts Transmitted:        180 packets
-  Total Wireless Reception Attempts:       888 packets
-  Total Packets Successfully Decoded:      878 packets
-  Overall Packet Delivery Ratio:         98.87 %
-------------------------------------------------------------------------
-  Mean End-to-End Latency:                6.01 ms
-  Median (P50) Latency:                   7.70 ms
-  95th Percentile Latency:               11.65 ms
-  99th Percentile Latency:               11.95 ms
-------------------------------------------------------------------------
-  Gateway Ingress Packets:                 176 packets
-  Gateway Successfully Forwarded:          176 packets
-  Gateway Dropped (Dedup/Loop/Sec):          0 packets
-  Gateway Mean Transit Pipeline:          7.41 ms
-========================================================================
+### 4.2 Sample Output: Highway Simulation Scenario
+
+```powershell
+python main.py --scenario highway --duration 5.0 --vehicles 10 --generate-plots
 ```
 
-### 4.3 Mixed-Stack A/B Benchmark Results
+```text
+========================================================================
+   ____  ____  ____   ____    __  __  _   _   ___   ____  ____  ____ 
+  |  _ \/ ___||  _ \ / ___|  |  \/  || | | | / _ \ / ___||  _ \|  _ \
+  | | | \___ \| |_) | |      | |\/| || | | || | | | |    | |_) | |_) |
+  | |_| |___) |  _ <| |___   | |  | || |_| || |_| | |___ |  _ <|  _ <
+  |____/|____/|_| \_\\____|  |_|  |_| \___/  \___/ \____||_| \_\_| \_\
+  
+     DSRC (IEEE 802.11p) <---> LTE-C-V2X (3GPP Rel-14 PC5 Mode 4)
+             Standards-Grounded Bidirectional Protocol Gateway
+========================================================================
+
+20:06:45.774 | INFO | main             | Running Highway Scenario: vehicles=10, duration=5.0s, gateway=True
+20:06:45.779 | INFO | security.pki_gen | Generated Root CA [digest: 8cf7e55bd2467c2c]
+20:06:45.780 | INFO | security.pki_gen | Generated Pseudonym CA [digest: cb9cac0d230b9bfa]
+20:06:45.780 | INFO | security.pki_gen | Generated Gateway cert [digest: 6ab0cbd64b00f0ef]
+20:06:45.783 | INFO | security.pki_gen | Simulated PKI ready: 1 Root CA, 2 Intermediate CAs, 1 Gateway Cert, 20 Vehicle Pseudonym Certs.
+20:06:45.784 | INFO | simulation.eng   | Starting V2X simulation run: duration=5.0s, vehicles=10
+
+[Real-time Gateway Ingress, Verification & Re-signing Pipeline]
+20:06:45.895 | INFO | gateway.security | Gateway verified inbound SPDU: sender_cert='Vehicle-5-Pseudo-0' [digest: 64501fecaf564ea6] psid=0x0020 payload_len=37B
+20:06:45.895 | INFO | gateway.security | Gateway re-signed outbound SPDU: gateway_cert='V2X-Gateway' [digest: 6ab0cbd64b00f0ef]
+20:06:45.896 | INFO | gateway.core     | Gateway successfully translated DSRC -> C-V2X in 0.00ms: vehicle_id=af564ea6 msg_cnt=0
+20:06:45.916 | INFO | gateway.security | Gateway verified inbound SPDU: sender_cert='Vehicle-2-Pseudo-0' [digest: 3208307295267c43] psid=0x0020 payload_len=37B
+20:06:45.917 | INFO | gateway.security | Gateway re-signed outbound SPDU: gateway_cert='V2X-Gateway' [digest: 6ab0cbd64b00f0ef]
+20:06:45.917 | INFO | gateway.core     | Gateway successfully translated C-V2X -> DSRC in 0.00ms: vehicle_id=95267c43 msg_cnt=0
+...
+20:06:51.324 | INFO | simulation.eng   | Simulation run complete. Total TX=500, Delivered=3756
+
+========================================================================
+ SIMULATION RUN SUMMARY: HIGHWAY (5.0s)
+========================================================================
+  Total BSM Broadcasts Transmitted:        500 packets
+  Total Wireless Reception Attempts:      4295 packets
+  Total Packets Successfully Decoded:     3756 packets
+  Overall Packet Delivery Ratio:         87.45 %
+------------------------------------------------------------------------
+  Mean End-to-End Latency:                6.00 ms
+  Median (P50) Latency:                   7.79 ms
+  95th Percentile Latency:               11.61 ms
+  99th Percentile Latency:               11.93 ms
+------------------------------------------------------------------------
+  Gateway Ingress Packets:                 459 packets
+  Gateway Successfully Forwarded:          459 packets
+  Gateway Dropped (Dedup/Loop/Sec):          0 packets
+  Gateway Mean Transit Pipeline:          7.61 ms
+========================================================================
+
+📊 Exported CSV Reports:
+   - results\reports\pdr_by_distance.csv
+   - results\reports\summary_metrics.csv
+
+📈 Generating publication plots with Matplotlib...
+   - results\plots\pdr_vs_distance.png
+   - results\plots\latency_cdf.png
+
+Execution finished in 6.50 seconds.
 ```
+
+#### Visual Simulation Results
+
+<p align="center">
+  <img src="results/plots/pdr_vs_distance.png" width="48%" alt="PDR vs Distance" />
+  <img src="results/plots/latency_cdf.png" width="48%" alt="Latency CDF" />
+</p>
+
+### 4.3 Mixed-Stack A/B Benchmark Results
+
+```powershell
+python main.py --scenario mixed_stack --duration 4.0 --vehicles 10
+```
+
+```text
 ========================================================================
  MIXED-STACK INTEROPERABILITY A/B BENCHMARK RESULTS
 ========================================================================
   WITHOUT GATEWAY (Isolated Stacks):
-    - Delivered Packets:                  357
-    - Overall PDR:                      99.17 %
+    - Delivered Packets:                 1265
+    - Overall PDR:                      79.06 %
   WITH GATEWAY (Bidirectional Translation):
-    - Delivered Packets:                  878
-    - Overall PDR:                      98.87 %
-    - Gateway Forwarded:                  176
-    - Gateway Transit Pipeline:          7.41 ms
+    - Delivered Packets:                 2942
+    - Overall PDR:                      86.66 %
+    - Gateway Forwarded:                  359
+    - Gateway Transit Pipeline:          7.66 ms
 ------------------------------------------------------------------------
-  INTEROPERABILITY RECEPTION GAIN:   +  145.9 %
+  INTEROPERABILITY RECEPTION GAIN:   +  132.6 %
 ========================================================================
 ```
 
@@ -158,8 +213,8 @@ python -m pytest tests/ --cov=simulation --cov=vehicles --cov=gateway --cov=cv2x
 ```
 
 **Results:**
-- **182 Passed** in ~5.0 seconds.
-- **89% statement coverage** across 3,107 statements.
+- **188 Passed** in ~5.6 seconds.
+- **90% statement coverage** across 3,205 statements.
 
 ---
 
