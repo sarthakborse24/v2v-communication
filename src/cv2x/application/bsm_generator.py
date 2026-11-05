@@ -126,3 +126,4 @@ class CV2XBSMGenerator:
         uper_bytes = encode_bsm_uper(bsm)
         assigned_prio = priority if priority is not None else self.default_priority
         return bsm, uper_bytes, assigned_prio
+

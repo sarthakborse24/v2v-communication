@@ -247,3 +247,4 @@ class SidelinkTransportBlock:
             source_l2_id=src_id,
             dest_l2_id=dst_id,
         )
+

@@ -208,3 +208,4 @@ class CV2XStack:
         bsm = decode_bsm_uper(bsm_bytes)
 
         return bsm, hdr, cert
+

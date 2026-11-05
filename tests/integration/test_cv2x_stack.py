@@ -155,3 +155,4 @@ class TestCV2XStackIntegration:
 
         assert cert2.to_be_signed.cert_id != cert1.to_be_signed.cert_id
         assert temp_id2 != temp_id1
+

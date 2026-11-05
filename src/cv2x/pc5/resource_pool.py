@@ -186,3 +186,4 @@ class Mode4ResourcePool:
         )
 
         return chosen.subframe_index, chosen.subchannel_index, self._sps_counter
+

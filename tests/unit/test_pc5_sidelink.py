@@ -150,3 +150,4 @@ class TestTransportBlock:
     def test_truncated_transport_block(self):
         with pytest.raises(TransportBlockError):
             SidelinkTransportBlock.deserialize(b"\x00" * 5)
+

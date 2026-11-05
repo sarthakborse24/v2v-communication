@@ -146,3 +146,4 @@ class LTEPhyModel:
         )
         threshold = rng.random() if rng else random.random()
         return threshold < pdr
+
