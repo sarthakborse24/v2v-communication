@@ -27,7 +27,7 @@ class PSID(IntEnum):
       0xxxxxxx              = 1 byte  (0x00–0x7F)
       10xxxxxx xxxxxxxx     = 2 bytes (0x0080–0x3FFF)
       110xxxxx xxxxxxxx...  = 3 bytes (0x4000–0x1FFFFF)
-      1110xxxx xxxxxxxx...  = 4 bytes (0x200000–0x1FFFFFFF)
+      1110xxxx xxxxxxxx...  = 4 bytes (0x200000–0x0FFFFFFF)
 
     Source: IEEE 1609.3 §8.1.3
     """
@@ -48,7 +48,7 @@ PSID_BYTE_LENGTHS = {
     (0x00, 0x7F):           1,
     (0x80, 0x3FFF):         2,
     (0x4000, 0x1FFFFF):     3,
-    (0x200000, 0x1FFFFFFF): 4,
+    (0x200000, 0x0FFFFFFF): 4,
 }
 
 
@@ -60,9 +60,9 @@ def psid_encoded_length(psid: int) -> int:
         return 2
     elif psid <= 0x1FFFFF:
         return 3
-    elif psid <= 0x1FFFFFFF:
+    elif psid <= 0x0FFFFFFF:
         return 4
-    raise ValueError(f"PSID value 0x{psid:08X} exceeds maximum (0x1FFFFFFF)")
+    raise ValueError(f"PSID value 0x{psid:08X} exceeds maximum (0x0FFFFFFF)")
 
 
 # ---------------------------------------------------------------------------

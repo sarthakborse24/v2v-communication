@@ -69,8 +69,8 @@ V2V-Gateway/
 |-------|--------|-------------|
 | 0 | ✅ Complete | Project skeleton, deps, config, exceptions, logging, ASN.1 schema |
 | 1 | ✅ Complete | BSM codec (UPER), IEEE 1609.2 security core, simulated PKI |
-| 2 | 🔄 Next | DSRC stack (WSMP, 802.11p frames, 1609.4 MAC) |
-| 3 | ⏳ Pending | LTE-C-V2X stack (PC5 SCI, Mode 4, LTE MAC) |
+| 2 | ✅ Complete | DSRC stack (WSMP, 802.11p frames, 1609.4 MAC, PHY simulation) |
+| 3 | 🔄 Next | LTE-C-V2X stack (PC5 SCI, Mode 4, LTE MAC, PHY simulation) |
 | 4 | ⏳ Pending | Bidirectional gateway (validation, translation, dedup) |
 | 5 | ⏳ Pending | Simulation engine (SimPy, channel models, vehicles, metrics) |
 | 6 | ⏳ Pending | Integration, documentation, hardware interface stubs |
