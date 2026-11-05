@@ -1,0 +1,13 @@
+Metric,Value,Unit
+Total_BSM_Transmitted,180,packets
+Total_Rx_Attempts,594,packets
+Total_Delivered,247,packets
+Overall_PDR,41.58,%
+Mean_Latency,4.72,ms
+P50_Latency,1.24,ms
+P95_Latency,11.25,ms
+P99_Latency,11.72,ms
+Gateway_Ingress,78,packets
+Gateway_Forwarded,78,packets
+Gateway_Dropped,0,packets
+Gateway_Mean_Transit,7.10,ms

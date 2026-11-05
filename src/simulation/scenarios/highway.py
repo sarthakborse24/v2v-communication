@@ -46,14 +46,16 @@ def create_highway_scenario(
     lanes_y = [0.0, 4.0, 8.0]
     speeds = [25.0, 28.0, 32.0]
 
-    spacing_m = (highway_length_m * 0.75) / max(1, num_vehicles // 3)
+    gw_x = highway_length_m / 2.0
+    spacing_m = min(80.0, highway_length_m / max(2, num_vehicles))
+    fleet_start_x = max(0.0, gw_x - (num_vehicles * spacing_m / 4.0))
 
     for i in range(1, num_vehicles + 1):
         v_name = f"Vehicle-{i}"
         lane_idx = (i - 1) % len(lanes_y)
         lane_y = lanes_y[lane_idx]
         speed = speeds[lane_idx]
-        start_x = ((i - 1) // len(lanes_y)) * spacing_m
+        start_x = fleet_start_x + ((i - 1) // len(lanes_y)) * spacing_m
 
         # Alternate between DSRC and C-V2X
         is_dsrc = (i % 2 == 1)

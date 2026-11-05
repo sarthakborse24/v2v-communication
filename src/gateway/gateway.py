@@ -348,3 +348,7 @@ class V2XGateway:
             f"vehicle_id={bsm.vehicle_id.hex()} msg_cnt={bsm.msg_cnt}"
         )
         return wave_frame
+
+    # Convenience alias methods for simulation engine
+    ingress_dsrc = process_dsrc_to_cv2x
+    ingress_cv2x = process_cv2x_to_dsrc

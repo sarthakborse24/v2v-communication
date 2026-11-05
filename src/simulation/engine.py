@@ -13,6 +13,7 @@ Standards References:
 from __future__ import annotations
 
 import math
+import time
 from typing import Dict, List, Optional, Tuple, Union
 import numpy as np
 import simpy
@@ -67,6 +68,12 @@ class SimulationEngine:
 
         # Telemetry
         self.metrics = MetricsCollector()
+        self.base_epoch_s: float = time.time()
+
+    @property
+    def current_wall_time_s(self) -> float:
+        """Simulation time mapped to wall-clock epoch seconds for cryptographic validation."""
+        return self.base_epoch_s + self.env.now
 
     def run(self, duration_seconds: float = 10.0) -> MetricsCollector:
         """Execute simulation for specified duration in seconds."""
@@ -97,9 +104,10 @@ class SimulationEngine:
 
         period_s = 0.1  # 10 Hz
         while True:
-            now_s = self.env.now
+            rel_now_s = self.env.now
+            wall_now_s = self.current_wall_time_s
             try:
-                frame = vehicle.generate_bsm_payload(now_s)
+                frame = vehicle.generate_bsm_payload(current_time_s=wall_now_s, sim_time_s=rel_now_s)
                 # Compute payload byte size
                 if isinstance(frame, bytes):
                     payload_bytes = len(frame)
@@ -111,7 +119,7 @@ class SimulationEngine:
                     payload_bytes = 200
 
                 self.metrics.record_tx(
-                    tx_time_s=now_s,
+                    tx_time_s=rel_now_s,
                     sender_id=vehicle.vehicle_id,
                     technology=vehicle.technology.value,
                     msg_cnt=vehicle.stats.tx_bsm_count % 128,
@@ -119,11 +127,11 @@ class SimulationEngine:
                 )
 
                 # Direct vehicle-to-vehicle propagation (same technology)
-                self._propagate_v2v(vehicle, frame, now_s)
+                self._propagate_v2v(vehicle, frame, wall_now_s, rel_now_s)
 
                 # If gateway is present, propagate to gateway
                 if self.gateway is not None:
-                    self._propagate_to_gateway(vehicle, frame, now_s)
+                    self._propagate_to_gateway(vehicle, frame, wall_now_s, rel_now_s)
 
             except Exception as e:
                 log.error(f"Error in broadcast process for {vehicle.vehicle_id}: {e}")
@@ -131,7 +139,7 @@ class SimulationEngine:
             # Sleep until next 10 Hz interval
             yield self.env.timeout(period_s)
 
-    def _propagate_v2v(self, sender: Vehicle, frame: Any, now_s: float):
+    def _propagate_v2v(self, sender: Vehicle, frame: Any, wall_now_s: float, rel_now_s: float):
         """Evaluate direct V2V channel to all peer vehicles."""
         for receiver in self.vehicle_manager:
             if receiver.vehicle_id == sender.vehicle_id:
@@ -165,10 +173,10 @@ class SimulationEngine:
             air_delay_ms = 1.0 + self.rng.uniform(-0.3, 0.3)
 
             if delivered:
-                receiver.receive_frame(frame, rx_power_dbm=prx_dbm, sinr_db=sinr_db, current_time_s=now_s)
+                receiver.receive_frame(frame, rx_power_dbm=prx_dbm, sinr_db=sinr_db, current_time_s=wall_now_s)
 
             self.metrics.record_rx(
-                rx_time_s=now_s,
+                rx_time_s=rel_now_s,
                 sender_id=sender.vehicle_id,
                 receiver_id=receiver.vehicle_id,
                 technology=tech_str,
@@ -181,7 +189,7 @@ class SimulationEngine:
                 is_gateway_bridged=False,
             )
 
-    def _propagate_to_gateway(self, sender: Vehicle, frame: Any, now_s: float):
+    def _propagate_to_gateway(self, sender: Vehicle, frame: Any, wall_now_s: float, rel_now_s: float):
         """Propagate vehicle broadcast to Roadside Gateway."""
         dist_to_gw = math.sqrt(
             (sender.x - self.gateway_x) ** 2
@@ -205,14 +213,14 @@ class SimulationEngine:
             return
 
         # Gateway ingress and translation process
-        self.env.process(self._gateway_translation_process(sender, frame, dist_to_gw, now_s))
+        self.env.process(self._gateway_translation_process(sender, frame, dist_to_gw, wall_now_s))
 
     def _gateway_translation_process(
         self,
         sender: Vehicle,
         frame: Any,
         ingress_distance_m: float,
-        ingress_time_s: float,
+        ingress_wall_s: float,
     ):
         """Process ingress through Gateway, wait transit time, and re-broadcast to opposite technology."""
         if self.gateway is None:
@@ -224,7 +232,7 @@ class SimulationEngine:
         dropped = False
         drop_reason = None
 
-        now_ms = int(self.env.now * 1000.0)
+        now_ms = int(ingress_wall_s * 1000.0)
         try:
             if is_dsrc_sender:
                 frame_bytes = frame if isinstance(frame, bytes) else frame.serialize(compute_fcs=True)
@@ -247,9 +255,11 @@ class SimulationEngine:
         transit_delay_s = self.rng.uniform(0.005, 0.010)
         yield self.env.timeout(transit_delay_s)
         transit_latency_ms = transit_delay_s * 1000.0
+        egress_wall_s = self.current_wall_time_s
+        egress_rel_s = self.env.now
 
         self.metrics.record_gateway_event(
-            timestamp_s=self.env.now,
+            timestamp_s=egress_rel_s,
             ingress_tech="DSRC" if is_dsrc_sender else "CV2X",
             egress_tech="CV2X" if is_dsrc_sender else "DSRC",
             transit_latency_ms=transit_latency_ms,
@@ -289,7 +299,7 @@ class SimulationEngine:
             total_e2e_latency_ms = transit_latency_ms + 2.0  # includes air interface delay
 
             if delivered:
-                receiver.receive_frame(egress_frame, rx_power_dbm=prx_dbm, sinr_db=sinr_db, current_time_s=self.env.now)
+                receiver.receive_frame(egress_frame, rx_power_dbm=prx_dbm, sinr_db=sinr_db, current_time_s=egress_wall_s)
 
             # Total distance from original sender to receiver
             total_dist_m = math.sqrt(
@@ -299,7 +309,7 @@ class SimulationEngine:
             )
 
             self.metrics.record_rx(
-                rx_time_s=self.env.now,
+                rx_time_s=egress_rel_s,
                 sender_id=sender.vehicle_id,
                 receiver_id=receiver.vehicle_id,
                 technology=out_tech_str,

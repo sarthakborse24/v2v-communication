@@ -112,17 +112,19 @@ class Vehicle:
 
     def generate_bsm_payload(
         self,
-        t_seconds: float,
+        current_time_s: float,
+        sim_time_s: Optional[float] = None,
         target_stack: str = "AUTO",
     ) -> Union[bytes, SidelinkTransmissionUnit]:
         """Generate and encode a signed BSM for outbound transmission."""
-        self.update_state(t_seconds)
+        kinematic_time = sim_time_s if sim_time_s is not None else current_time_s
+        self.update_state(kinematic_time)
 
         stack_choice = target_stack.upper()
         if stack_choice == "AUTO":
             stack_choice = "DSRC" if self.technology == VehicleTechnology.DSRC else "CV2X"
 
-        now_ms = int(t_seconds * 1000.0)
+        now_ms = int(current_time_s * 1000.0)
 
         if stack_choice == "DSRC":
             if self.dsrc_stack is None:
@@ -172,7 +174,7 @@ class Vehicle:
                     frame_bytes, rx_power_dbm=rx_power_dbm, current_time_ms=now_ms
                 )
                 bsm_dict = bsm.to_asn1_dict()
-                sec_mark = bsm.core_data.sec_mark
+                sec_mark = bsm.sec_mark
             elif isinstance(frame, SidelinkTransmissionUnit):
                 if self.cv2x_stack is None:
                     return None
@@ -183,7 +185,7 @@ class Vehicle:
                     current_time_ms=now_ms,
                 )
                 bsm_dict = bsm.to_asn1_dict()
-                sec_mark = bsm.core_data.sec_mark
+                sec_mark = bsm.sec_mark
             else:
                 return None
 
