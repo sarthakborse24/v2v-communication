@@ -102,3 +102,4 @@ class DSRCCertificateManager:
         """Derive 4-byte SAE J2735 TemporaryID from active certificate digest."""
         cert, _ = self.get_active_credentials()
         return cert.compute_digest8()[-4:]
+

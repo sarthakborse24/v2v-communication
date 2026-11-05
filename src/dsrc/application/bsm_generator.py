@@ -124,3 +124,4 @@ class BSMGenerator:
         )
         uper_bytes = encode_bsm_uper(bsm)
         return bsm, uper_bytes
+

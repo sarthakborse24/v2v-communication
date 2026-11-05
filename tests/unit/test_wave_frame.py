@@ -82,3 +82,4 @@ class TestWAVEFrame:
         mac_str = mac_to_str(mac)
         assert mac_str == "00:1a:2b:3c:4d:5e"
         assert str_to_mac(mac_str) == mac
+

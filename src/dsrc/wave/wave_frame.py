@@ -170,3 +170,4 @@ class WAVEFrame:
             edca_category=edca,
             ethertype=ethertype,
         )
+

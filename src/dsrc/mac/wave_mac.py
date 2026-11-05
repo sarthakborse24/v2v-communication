@@ -180,3 +180,4 @@ class WAVEMAC:
                 return sch_start - offset_ms
             else:
                 return (self.sync_interval_ms - offset_ms) + sch_start
+

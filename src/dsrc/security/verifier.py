@@ -67,3 +67,4 @@ class DSRCSecurityVerifier:
             f"[digest: {cert.compute_digest8().hex()}] msg_time={hdr.generation_time}"
         )
         return payload, hdr, cert
+

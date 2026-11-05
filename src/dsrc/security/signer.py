@@ -52,3 +52,4 @@ class DSRCSecuritySigner:
             f"[digest: {cert.compute_digest8().hex()}] payload={len(bsm_bytes)}B"
         )
         return spdu
+
