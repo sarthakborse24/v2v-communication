@@ -117,3 +117,4 @@ class GatewaySecurityHandler:
             f"[digest: {self.gateway_digest.hex()}] new_gen_time={now_ms}"
         )
         return outbound_spdu
+

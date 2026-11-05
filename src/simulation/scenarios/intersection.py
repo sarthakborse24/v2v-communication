@@ -99,3 +99,4 @@ def create_intersection_scenario(
 
     metrics = engine.run(duration_seconds=duration_s)
     return engine, metrics
+

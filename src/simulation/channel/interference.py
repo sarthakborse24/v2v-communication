@@ -180,3 +180,4 @@ class ChannelInterferenceModel:
         rand_val = generator.uniform(0.0, 1.0)
         delivered = rand_val < pdr
         return delivered, pdr
+

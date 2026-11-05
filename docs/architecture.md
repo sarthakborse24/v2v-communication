@@ -112,3 +112,4 @@ The Gateway operates at the boundary between DSRC and C-V2X:
   - Geodetic WGS-84 to local Cartesian coordinate conversions.
 - **Fleet Coordination (`src/vehicles/vehicle_manager.py`)**: NumPy-vectorized pairwise distance matrices.
 - **Metrics & Reporting (`src/simulation/metrics/`)**: Distance-binned PDR, latency percentiles (P50, P95, P99), gateway transit duration, CSV exports, and Matplotlib publication figures.
+

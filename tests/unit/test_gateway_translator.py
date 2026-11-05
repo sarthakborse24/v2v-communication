@@ -95,3 +95,4 @@ class TestGatewayTranslator:
         assert wave_frame.edca_category == EDCACategory.AC_VO
         assert wsm.psid == PSID.BSM
         assert wsm.payload == sample_re_signed_spdu.to_bytes()
+

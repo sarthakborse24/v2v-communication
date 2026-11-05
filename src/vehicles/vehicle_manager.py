@@ -100,3 +100,4 @@ class VehicleManager:
                 results.append((v, dist))
         results.sort(key=lambda item: item[1])
         return results
+

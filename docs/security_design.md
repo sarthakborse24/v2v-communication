@@ -91,3 +91,4 @@ The architecture deploys two complementary defenses:
 To prevent endless feedback loops across DSRC and C-V2X:
 1. **Gateway Signer Identification**: If an ingress message's SPDU signer is identified as a known Gateway (via certificate digest or cert ID), it is dropped instantly.
 2. **Egress Digest Tracking**: When the gateway translates and forwards a message, it computes `SHA256(bsm_bytes)` and caches it for $3.0$ seconds. If the translated message echoes back across the other radio interface, the match is detected and suppressed.
+

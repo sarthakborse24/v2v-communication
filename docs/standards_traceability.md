@@ -34,3 +34,4 @@ This document maps all standards clauses referenced in the implementation to the
 ## Integrity Notes
 - Modules marked **✅ Fully Grounded** implement the exact bit-level encoding, mathematical formulas, or state machines required by the standard.
 - Modules marked **[SIMULATION MODEL]** implement validated statistical models representing physical layer behavior (e.g., link budget, SINR, and BLER) without claiming live RF waveform modulation.
+

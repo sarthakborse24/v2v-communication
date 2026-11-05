@@ -105,3 +105,4 @@ class CohdaMK5RadioDriver(DSCRadioDevice):
 > 3. RF power amplifiers, bandpass filters, and tuned 5.9 GHz vehicular antennas.
 >
 > **The default software-only simulation environment operates without RF hardware and does not emit electromagnetic radiation.**
+

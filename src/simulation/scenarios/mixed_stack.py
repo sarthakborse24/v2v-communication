@@ -65,3 +65,4 @@ def run_comparative_benchmark(
 
     log.info(f"Benchmark finished. Cross-technology delivery gain: +{gain_percent:.1f}%")
     return results
+

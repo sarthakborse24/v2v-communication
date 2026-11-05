@@ -109,3 +109,4 @@ class ChannelFadingSimulator:
             fast_gain = self.sample_fast_fading_gain_db(count=n)
             shadow_loss = self.sample_shadowing_loss_db(count=n)
             return path_loss_db + shadow_loss - fast_gain
+

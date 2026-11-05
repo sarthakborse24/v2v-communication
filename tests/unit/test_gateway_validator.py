@@ -123,3 +123,4 @@ class TestGatewayValidator:
         with pytest.raises(ValidationError) as exc:
             validator.validate_ingress_spdu(packet)
         assert "failed ASN.1 UPER decoding" in str(exc.value)
+

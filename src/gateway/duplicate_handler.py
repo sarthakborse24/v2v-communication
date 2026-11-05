@@ -82,3 +82,4 @@ class DuplicateHandler:
                 f"Duplicate message from source {source_id.hex()} with msg_cnt {msg_cnt}"
             )
         self.record_message(source_id, msg_cnt, now)
+

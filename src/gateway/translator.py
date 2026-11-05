@@ -148,3 +148,4 @@ class GatewayTranslator:
             f"edca={edca_cat.name} psid=0x{wsm.psid:04X}"
         )
         return wave_frame, wsm
+

@@ -72,3 +72,4 @@ class TestHardwareInterfaceStubs:
             radio.transmit_raw_frame(b"\x00" * 50)
         with pytest.raises(HardwareInterfaceNotImplementedError):
             radio.receive_raw_frame()
+

@@ -159,3 +159,4 @@ class SimulationReporter:
             "pdr_plot": self.plot_pdr_vs_distance(),
             "latency_plot": self.plot_latency_cdf(),
         }
+

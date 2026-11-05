@@ -96,3 +96,4 @@ class GatewayValidator:
             f"msg_cnt={bsm.msg_cnt} lat={bsm.lat} lon={bsm.lon}"
         )
         return spdu, bsm
+

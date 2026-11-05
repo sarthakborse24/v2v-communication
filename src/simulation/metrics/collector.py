@@ -227,3 +227,4 @@ class MetricsCollector:
             "mean_transit_ms": float(np.mean(latencies)) if latencies else 0.0,
             "p95_transit_ms": float(np.percentile(latencies, 95)) if latencies else 0.0,
         }
+

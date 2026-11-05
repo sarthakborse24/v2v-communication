@@ -151,3 +151,4 @@ class TestInterferenceAndPDR:
         pdr_dsrc = model.compute_pdr(5.0, technology="DSRC", mcs_index=3)
         pdr_cv2x = model.compute_pdr(5.0, technology="CV2X", mcs_index=10)
         assert pdr_cv2x > pdr_dsrc
+

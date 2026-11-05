@@ -184,3 +184,4 @@ class PathLossCalculator:
             return urban_nlos_path_loss(distance_m, self.fc_ghz)
         else:
             raise ValueError(f"Unknown path loss model type: {self.model_type}")
+

@@ -48,3 +48,4 @@ class TestDuplicateHandler:
 
         # After 2.5 seconds (past window_seconds = 2.0), entry is pruned and accepted
         handler.check_and_record(source_id=source, msg_cnt=5, current_time_s=102.5)
+

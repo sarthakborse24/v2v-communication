@@ -116,3 +116,4 @@ class GatewayReceiver:
                 "dest_l2_id": tb.dest_l2_id,
             },
         )
+

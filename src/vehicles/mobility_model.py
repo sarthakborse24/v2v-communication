@@ -244,3 +244,4 @@ class IntersectionMobilityModel(MobilityModel):
 
     def get_heading_deg(self, t_seconds: float) -> float:
         return self._interpolator.get_heading_deg(t_seconds)
+
